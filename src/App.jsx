@@ -18,8 +18,7 @@ function App() {
   const started = useRef(false) // guard StrictMode's double mount
 
   // Fetch random titles until we find one that has an image and isn't
-  // blocked by the ban list. `banList` is passed in so callers can use the
-  // freshest ban list without waiting for state to settle.
+  // blocked by the ban list.
   async function discover(banList) {
     setLoading(true)
     setNoResults(false)
@@ -99,8 +98,7 @@ function App() {
             <h1 className="state-title">Add your TMDB key.</h1>
             <p className="state-body">
               Create a <code>.env.local</code> file with{' '}
-              <code>VITE_TMDB_TOKEN=your_read_access_token</code> (or{' '}
-              <code>VITE_TMDB_API_KEY=your_v3_key</code>), then restart the dev server.
+              <code>VITE_TMDB_TOKEN=your_read_access_token</code>
             </p>
           </div>
         )}

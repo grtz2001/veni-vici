@@ -1,7 +1,7 @@
 import Tag from './Tag'
 import { tagsFor, formatRuntime } from '../api'
 
-// Shows a single discovered title: poster image, three+ attributes
+// shows a single discovered title: poster image, three+ attributes
 // (year / runtime / language, plus rating & genres), the clickable ban
 // tags, and the Discover button.
 function MovieCard({ show, onBan, onDiscover, loading }) {

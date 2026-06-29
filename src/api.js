@@ -1,36 +1,31 @@
-// Data layer for Veni Vici, backed by The Movie Database (TMDB).
+// The Movie Database (TMDB).
 // https://developer.themoviedb.org/docs/getting-started
 //
-// TMDB needs credentials. Put ONE of these in a `.env.local` file (see
+// TMDB needs credentials. Put this in a `.env.local` file (see
 // `.env.example`) and restart `npm run dev`:
-//   VITE_TMDB_TOKEN    – a v4 "API Read Access Token" (recommended)
-//   VITE_TMDB_API_KEY  – a classic v3 API key
+//   VITE_TMDB_TOKEN    – a v4 "API Read Access Token" from TMDB
 const TOKEN = import.meta.env.VITE_TMDB_TOKEN
-const KEY = import.meta.env.VITE_TMDB_API_KEY
 
-export const hasTmdbCredentials = Boolean(TOKEN || KEY)
+export const hasTmdbCredentials = Boolean(TOKEN)
 
 const BASE = 'https://api.themoviedb.org/3'
 const IMG_BASE = 'https://image.tmdb.org/t/p/w500'
 const MAX_PAGE = 500 // TMDB caps /discover at 500 pages
 
-// Small fetch wrapper that attaches whichever credential is configured.
+// small fetch wrapper that attaches the read access token.
 async function tmdb(path) {
-  const headers = { accept: 'application/json' }
-  let url = `${BASE}${path}`
-  if (TOKEN) {
-    headers.Authorization = `Bearer ${TOKEN}`
-  } else {
-    url += `${path.includes('?') ? '&' : '?'}api_key=${KEY}`
-  }
-  const res = await fetch(url, { headers })
+  const res = await fetch(`${BASE}${path}`, {
+    headers: {
+      accept: 'application/json',
+      Authorization: `Bearer ${TOKEN}`,
+    },
+  })
   if (!res.ok) throw new Error(`TMDB ${res.status}`)
   return res.json()
 }
 
-// Turn TMDB's movie-details JSON into the small, consistent shape our UI uses.
-// Every discovered title exposes the SAME attributes so the card is consistent
-// across calls.
+// turn TMDB's movie-details JSON into the what we actually use.
+// ensure consistency across movies
 export function normalizeMovie(movie) {
   return {
     id: movie.id,
@@ -44,9 +39,7 @@ export function normalizeMovie(movie) {
   }
 }
 
-// Discover a single random movie. We pick a random page of popular,
-// well-rated movies, pick one from it, then fetch its full details (the
-// details endpoint is the only one that includes runtime + genre names).
+// discover a single random movie. 
 export async function fetchRandomMovie() {
   const page = Math.floor(Math.random() * MAX_PAGE) + 1
   const list = await tmdb(
@@ -59,9 +52,9 @@ export async function fetchRandomMovie() {
   return normalizeMovie(detail)
 }
 
-// ---- Derived attributes used for the clickable ban tags ----
+// work on attributes that could be banned: genre, decade, language, runtime. Each attribute has a stable `key` so the same genre/era/language/runtime always maps to the same ban entry.
 
-// Map an ISO language code (e.g. "en") to a readable name ("English").
+// map an ISO language code (e.g. "en") to a readable name ("English").
 function languageName(code) {
   if (!code) return 'Unknown'
   try {
@@ -91,7 +84,7 @@ export function formatRuntime(min) {
   return `${h}h ${m < 10 ? '0' : ''}${m}m`
 }
 
-// The set of bannable tags for a movie. Each tag has a stable `key` so the
+// the set of bannable tags for a movie. Each tag has a stable `key` so the
 // same genre/era/language/runtime always maps to the same ban entry.
 export function tagsFor(movie) {
   const tags = movie.genres.map((g) => ({
@@ -109,7 +102,7 @@ export function tagsFor(movie) {
   return tags
 }
 
-// A movie is banned if ANY of its tags is on the ban list.
+// a movie is banned if ANY of its tags is on the ban list.
 export function isBanned(movie, banned) {
   return tagsFor(movie).some((tag) => banned.includes(tag.key))
 }

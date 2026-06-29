@@ -1,6 +1,6 @@
-// Two tabs below the card:
-//   Banned  — every banned attribute; tap one to restore it.
-//   History — every title discovered this session; tap one to clear it.
+// two tabs below the card:
+// -banned  - every banned attribute. tap one to restore it.
+// -history - every title discovered this session. tap one to clear it.
 function BanHistoryPanel({ tab, setTab, banned, history, onUnban, onRemoveHistory }) {
   const bannedItems = banned.map((key) => {
     const i = key.indexOf(':')
@@ -40,7 +40,7 @@ function BanHistoryPanel({ tab, setTab, banned, history, onUnban, onRemoveHistor
           </>
         ) : (
           <p className="empty-text">
-            Nothing banned yet. Tap any tag on the card — a genre, era, language or runtime — and it
+            Nothing banned yet. Tap any tag on the card — genre, era, language or runtime — and it
             lands here, quietly removed from your discoveries.
           </p>
         ))}

@@ -71,9 +71,10 @@ export function decade(year) {
 
 export function runtimeBand(min) {
   if (!min) return 'Unknown'
-  if (min < 100) return 'Short (<1h40)'
-  if (min <= 130) return 'Medium'
-  return 'Long (2h+)'
+  if (min < 40) return 'Short film (<40m)'
+  if (min <= 75) return 'Medium Lenth (40–75m)'
+  if (min <= 120) return 'Standard Feature (75–120m)'
+  return 'Epic Feature (2h+)'
 }
 
 export function formatRuntime(min) {
